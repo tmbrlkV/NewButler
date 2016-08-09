@@ -1,0 +1,19 @@
+group 'NewButler'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+
+dependencies {
+    compile "org.zeromq:jeromq:latest.release"
+    compile "com.fasterxml.jackson.core:jackson-databind:latest.release"
+
+    compile 'org.slf4j:jcl-over-slf4j:latest.release'
+    compile 'ch.qos.logback:logback-classic:latest.release'
+    testCompile "junit:junit:latest.release"
+}
