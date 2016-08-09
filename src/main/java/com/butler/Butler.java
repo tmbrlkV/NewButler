@@ -1,6 +1,7 @@
 package com.butler;
 
 import com.butler.command.CommandManager;
+import com.butler.socket.ConnectionProperties;
 import com.util.json.JsonMessage;
 import com.util.json.JsonObjectFactory;
 import org.slf4j.Logger;
@@ -17,9 +18,16 @@ public class Butler {
         try (ZMQ.Context context = ZMQ.context(1)) {
             ZMQ.Socket pull = context.socket(ZMQ.PULL);
             ZMQ.Socket publisher = context.socket(ZMQ.PUB);
+            ZMQ.Socket push = context.socket(ZMQ.PUSH);
+            ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
 
             pull.bind("tcp://*:14000");
             publisher.bind("tcp://*:14001");
+
+            push.connect(ConnectionProperties.getProperties().getProperty("chat_sender_address"));
+            subscriber.connect(ConnectionProperties.getProperties().getProperty("chat_receiver_address"));
+            subscriber.subscribe("".getBytes());
+
 
             CommandManager manager = new CommandManager();
 
@@ -31,7 +39,11 @@ public class Butler {
                 JsonMessage objectFromJson = JsonObjectFactory.getObjectFromJson(message, JsonMessage.class);
                 String data = Optional.ofNullable(objectFromJson).map(JsonMessage::getFrom).orElseGet(() -> "");
                 logger.debug(data);
-                publisher.sendMore("1");
+                if (data == null || data.equals("")) {
+                    publisher.sendMore("0");
+                } else {
+                    publisher.sendMore(data);
+                }
                 publisher.send(execute);
             }
         }
