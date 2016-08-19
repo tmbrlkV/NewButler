@@ -1,6 +1,7 @@
 package com.butler.command;
 
 import com.butler.socket.DatabaseSocketHandler;
+import com.butler.socket.SenderSocketHandler;
 import com.util.entity.User;
 import com.util.json.JsonMessage;
 import com.util.json.JsonObject;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CommandManager {
+    private SenderSocketHandler sender = new SenderSocketHandler();
     private String DEFAULT_REPLY = "";
 
     private Map<String, Command> commandMap = new ConcurrentHashMap<String, Command>() {{
@@ -28,7 +30,10 @@ public class CommandManager {
         put(Command.GET_USER_BY_LOGIN_PASSWORD, databaseCommand);
         put(Command.GET_USER_BY_LOGIN, databaseCommand);
         put(Command.NEW_USER, databaseCommand);
-        put(Command.MESSAGE, request -> request);
+        put(Command.MESSAGE, request -> {
+            sender.send(request);
+            return request;
+        });
     }};
 
     public String execute(String json) {

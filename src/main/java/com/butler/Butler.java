@@ -18,15 +18,29 @@ public class Butler {
         try (ZMQ.Context context = ZMQ.context(1)) {
             ZMQ.Socket pull = context.socket(ZMQ.PULL);
             ZMQ.Socket publisher = context.socket(ZMQ.PUB);
-            ZMQ.Socket push = context.socket(ZMQ.PUSH);
             ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
 
             pull.bind("tcp://*:14000");
             publisher.bind("tcp://*:14001");
 
-            push.connect(ConnectionProperties.getProperties().getProperty("chat_sender_address"));
             subscriber.connect(ConnectionProperties.getProperties().getProperty("chat_receiver_address"));
             subscriber.subscribe("".getBytes());
+            ZMQ.Poller poller = new ZMQ.Poller(0);
+            poller.register(subscriber, ZMQ.Poller.POLLIN);
+
+            new Thread(() -> {
+                while (!Thread.currentThread().isInterrupted()) {
+                    int events = poller.poll();
+                    if (events > 0) {
+                        String reply = subscriber.recvStr();
+                        JsonMessage jsonMessage = JsonObjectFactory.getObjectFromJson(reply, JsonMessage.class);
+                        if (jsonMessage != null) {
+                            publisher.sendMore(jsonMessage.getFrom());
+                            publisher.send(reply);
+                        }
+                    }
+                }
+            }).start();
 
 
             CommandManager manager = new CommandManager();
@@ -39,12 +53,10 @@ public class Butler {
                 JsonMessage objectFromJson = JsonObjectFactory.getObjectFromJson(message, JsonMessage.class);
                 String data = Optional.ofNullable(objectFromJson).map(JsonMessage::getFrom).orElseGet(() -> "");
                 logger.debug(data);
-                if (data == null || data.equals("")) {
+                if (data.equals("")) {
                     publisher.sendMore("0");
-                } else {
-                    publisher.sendMore(data);
+                    publisher.send(execute);
                 }
-                publisher.send(execute);
             }
         }
     }
