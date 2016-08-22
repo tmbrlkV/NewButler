@@ -1,6 +1,8 @@
 package com.util.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.util.entity.User;
 
@@ -30,6 +32,7 @@ public final class JsonObjectFactory {
         try {
             return mapper.readValue(json, tClass);
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }
