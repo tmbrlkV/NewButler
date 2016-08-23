@@ -1,6 +1,8 @@
 package com.util.json;
 
-import com.util.entity.User;
+import com.chat.util.entity.User;
+import com.chat.util.json.JsonObjectFactory;
+import com.chat.util.json.JsonProtocol;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

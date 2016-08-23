@@ -2,9 +2,9 @@ package com.butler.command;
 
 import com.butler.socket.DatabaseSocketHandler;
 import com.butler.socket.SenderSocketHandler;
-import com.util.entity.User;
-import com.util.json.JsonObjectFactory;
-import com.util.json.JsonProtocol;
+import com.chat.util.entity.User;
+import com.chat.util.json.JsonObjectFactory;
+import com.chat.util.json.JsonProtocol;
 
 import java.util.Map;
 import java.util.Optional;
