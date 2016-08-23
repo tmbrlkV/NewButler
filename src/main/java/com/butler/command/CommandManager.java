@@ -3,9 +3,8 @@ package com.butler.command;
 import com.butler.socket.DatabaseSocketHandler;
 import com.butler.socket.SenderSocketHandler;
 import com.util.entity.User;
-import com.util.json.JsonMessage;
-import com.util.json.JsonObject;
 import com.util.json.JsonObjectFactory;
+import com.util.json.JsonProtocol;
 
 import java.util.Map;
 import java.util.Optional;
@@ -37,18 +36,12 @@ public class CommandManager {
     }};
 
     public String execute(String json) {
-        JsonObject databaseRequest = JsonObjectFactory.getObjectFromJson(json, JsonObject.class);
-        JsonMessage message = JsonObjectFactory.getObjectFromJson(json, JsonMessage.class);
+        JsonProtocol request = JsonObjectFactory.getObjectFromJson(json, JsonProtocol.class);
+        Optional<JsonProtocol> protocolOptional = Optional.ofNullable(request);
+        String commandName = protocolOptional.map(JsonProtocol::getCommand).orElse("");
+        Command command = commandMap.getOrDefault(commandName, r -> Command.NO_COMMAND);
+        json = protocolOptional.map(JsonObjectFactory::getJsonString).orElse("");
 
-        Optional<JsonMessage> messageOptional = Optional.ofNullable(message);
-        Optional<JsonObject> databaseRequestOptional = Optional.ofNullable(databaseRequest);
-
-        String stringCommand = databaseRequestOptional.map(JsonObject::getCommand)
-                .orElseGet(() -> messageOptional.map(JsonMessage::getCommand).orElse(Command.NO_COMMAND));
-
-        Command command = commandMap.getOrDefault(stringCommand, request -> Command.NO_COMMAND);
-        String jsonString = databaseRequestOptional.map(JsonObjectFactory::getJsonString)
-                .orElseGet(() -> messageOptional.map(JsonObjectFactory::getJsonString).orElse(Command.NO_COMMAND));
-        return command.execute(jsonString);
+        return command.execute(json);
     }
 }

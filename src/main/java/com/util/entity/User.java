@@ -1,5 +1,7 @@
 package com.util.entity;
 
+import com.util.json.JsonObjectFactory;
+
 public class User  {
     private int id;
     private String login;
@@ -73,10 +75,6 @@ public class User  {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", login='" + login + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+        return JsonObjectFactory.getJsonString(this);
     }
 }
