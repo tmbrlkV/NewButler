@@ -2,8 +2,8 @@ package com.butler;
 
 import com.butler.command.CommandManager;
 import com.butler.socket.ConnectionProperties;
-import com.util.json.JsonMessage;
 import com.util.json.JsonObjectFactory;
+import com.util.json.JsonProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
@@ -33,7 +33,7 @@ public class Butler {
                     int events = poller.poll();
                     if (events > 0) {
                         String reply = subscriber.recvStr();
-                        JsonMessage jsonMessage = JsonObjectFactory.getObjectFromJson(reply, JsonMessage.class);
+                        JsonProtocol jsonMessage = JsonObjectFactory.getObjectFromJson(reply, JsonProtocol.class);
                         if (jsonMessage != null) {
                             publisher.sendMore(jsonMessage.getFrom());
                             publisher.send(reply);
@@ -50,8 +50,8 @@ public class Butler {
                 logger.debug(message);
                 String execute = manager.execute(message);
                 logger.debug(execute);
-                JsonMessage objectFromJson = JsonObjectFactory.getObjectFromJson(message, JsonMessage.class);
-                String data = Optional.ofNullable(objectFromJson).map(JsonMessage::getFrom).orElseGet(() -> "");
+                JsonProtocol objectFromJson = JsonObjectFactory.getObjectFromJson(message, JsonProtocol.class);
+                String data = Optional.ofNullable(objectFromJson).map(JsonProtocol::getFrom).orElseGet(() -> "");
                 logger.debug(data);
                 if (data.equals("")) {
                     publisher.sendMore("0");
