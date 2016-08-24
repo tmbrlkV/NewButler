@@ -2,7 +2,6 @@ package com.butler;
 
 import com.butler.command.CommandManager;
 import com.butler.socket.ConnectionProperties;
-
 import com.chat.util.json.JsonObjectFactory;
 import com.chat.util.json.JsonProtocol;
 import org.slf4j.Logger;
@@ -36,7 +35,7 @@ public class Butler {
                         String reply = subscriber.recvStr();
                         JsonProtocol jsonMessage = JsonObjectFactory.getObjectFromJson(reply, JsonProtocol.class);
                         if (jsonMessage != null) {
-                            publisher.sendMore(jsonMessage.getFrom());
+                            publisher.sendMore(jsonMessage.getTo());
                             publisher.send(reply);
                         }
                     }
