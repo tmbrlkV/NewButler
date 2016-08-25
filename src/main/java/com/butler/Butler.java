@@ -50,12 +50,14 @@ public class Butler {
                 logger.debug(message);
                 String execute = manager.execute(message);
                 logger.debug(execute);
-                JsonProtocol objectFromJson = JsonObjectFactory.getObjectFromJson(message, JsonProtocol.class);
+                JsonProtocol objectFromJson = JsonObjectFactory.getObjectFromJson(execute, JsonProtocol.class);
                 String data = Optional.ofNullable(objectFromJson).map(JsonProtocol::getFrom).orElseGet(() -> "");
                 logger.debug(data);
-                if (data.equals("")) {
-                    publisher.sendMore("0");
+                if (data.equals("database")) {
+                    publisher.sendMore(data);
+                    logger.debug("From database: {}", execute);
                     publisher.send(execute);
+                    logger.debug("After");
                 }
             }
         }

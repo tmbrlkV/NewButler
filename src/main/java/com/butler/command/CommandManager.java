@@ -2,7 +2,6 @@ package com.butler.command;
 
 import com.butler.socket.DatabaseSocketHandler;
 import com.butler.socket.SenderSocketHandler;
-import com.chat.util.entity.User;
 import com.chat.util.json.JsonObjectFactory;
 import com.chat.util.json.JsonProtocol;
 
@@ -23,8 +22,8 @@ public class CommandManager {
                 try (DatabaseSocketHandler handler = new DatabaseSocketHandler()) {
                     handler.send(request);
                     String reply = handler.receive();
-                    User user = JsonObjectFactory.getObjectFromJson(reply, User.class);
-                    return JsonObjectFactory.getJsonString(Optional.ofNullable(user).orElse(new User()));
+                    JsonProtocol protocol = JsonObjectFactory.getObjectFromJson(reply, JsonProtocol.class);
+                    return JsonObjectFactory.getJsonString(Optional.ofNullable(protocol).orElse(new JsonProtocol()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
