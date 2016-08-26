@@ -47,17 +47,20 @@ public class Butler {
 
             while (!Thread.currentThread().isInterrupted()) {
                 String message = pull.recvStr();
-                logger.debug(message);
+                logger.debug("Received {}", message);
                 String execute = manager.execute(message);
-                logger.debug(execute);
+                logger.debug("Executed {}", execute);
                 JsonProtocol objectFromJson = JsonObjectFactory.getObjectFromJson(execute, JsonProtocol.class);
                 String data = Optional.ofNullable(objectFromJson).map(JsonProtocol::getFrom).orElseGet(() -> "");
-                logger.debug(data);
+                logger.debug("Data {}", data);
                 if (data.equals("database")) {
                     publisher.sendMore(data);
                     logger.debug("From database: {}", execute);
                     publisher.send(execute);
-                    logger.debug("After");
+                } else {
+                    publisher.sendMore("roomManager");
+                    logger.debug("From roomManager: {}", execute);
+                    publisher.send(execute);
                 }
             }
         }
