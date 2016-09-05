@@ -13,7 +13,7 @@ repositories {
 dependencies {
     compile "org.zeromq:jeromq:latest.release"
     compile "com.fasterxml.jackson.core:jackson-databind:latest.release"
-    compile 'android-chat-com.chat.util:android-chat-utils:1.0-RELEASE'
+    compile "edu.test:chat-utils:1.0-RELEASE"
 
     compile 'org.slf4j:jcl-over-slf4j:latest.release'
     compile 'ch.qos.logback:logback-classic:latest.release'

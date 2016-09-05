@@ -57,9 +57,11 @@ public class Butler {
                     publisher.sendMore(data);
                     logger.debug("From database: {}", execute);
                     publisher.send(execute);
-                } else {
+                } else if (data.startsWith("roomManager")){
                     publisher.sendMore("roomManager");
                     logger.debug("From roomManager: {}", execute);
+                    publisher.send(execute);
+                } else {
                     publisher.send(execute);
                 }
             }
