@@ -45,7 +45,11 @@ public class Butler {
 
             CommandManager manager = new CommandManager();
 
+            ZMQ.Poller recvPoller = new ZMQ.Poller(0);
+            recvPoller.register(pull, ZMQ.Poller.POLLIN);
+
             while (!Thread.currentThread().isInterrupted()) {
+
                 String message = pull.recvStr();
                 logger.debug("Received {}", message);
                 String execute = manager.execute(message);
@@ -57,12 +61,14 @@ public class Butler {
                     publisher.sendMore(data);
                     logger.debug("From database: {}", execute);
                     publisher.send(execute);
-                } else if (data.startsWith("roomManager")){
+                } else if (data.startsWith("roomManager")) {
                     publisher.sendMore("roomManager");
                     logger.debug("From roomManager: {}", execute);
                     publisher.send(execute);
                 } else {
+                    logger.debug("From else: {}", execute);
                     publisher.send(execute);
+                    logger.debug("After else: {}", execute);
                 }
             }
         }

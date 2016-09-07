@@ -3,6 +3,7 @@ package com.butler.command;
 import com.butler.socket.DatabaseSocketHandler;
 import com.butler.socket.RoomManagerSocketHandler;
 import com.butler.socket.SenderSocketHandler;
+import com.chat.util.entity.User;
 import com.chat.util.json.JsonObjectFactory;
 import com.chat.util.json.JsonProtocol;
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ import java.util.regex.Pattern;
 public class CommandManager {
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
     private static Pattern pattern = Pattern.compile("([a-zA-Z]+)(:\\d+){0,2}");
-    private static String DEFAULT_REPLY = "";
+    private static String DEFAULT_REPLY = new JsonProtocol<>("", new User()).toString();
     private SenderSocketHandler sender = new SenderSocketHandler();
 
     private Map<String, Command> commandMap = new ConcurrentHashMap<String, Command>() {
@@ -63,7 +64,7 @@ public class CommandManager {
         JsonProtocol request = JsonObjectFactory.getObjectFromJson(json, JsonProtocol.class);
         Optional<JsonProtocol> protocolOptional = Optional.ofNullable(request);
         String keyTo = protocolOptional.map(JsonProtocol::getTo).orElse(DEFAULT_REPLY);
-        Command command = commandMap.getOrDefault(getServiceName(keyTo), r -> Command.NO_COMMAND);
+        Command command = commandMap.getOrDefault(getServiceName(keyTo), r -> DEFAULT_REPLY);
 
         return command.execute(json);
     }
